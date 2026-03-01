@@ -719,10 +719,10 @@ void updateBuzzer() {
       buzzerState = false;
       lastBuzzerToggle = now;
 
-      beepCount++;  // นับว่า 1 ครั้งเสร็จแล้ว
+      beepCount++; 
 
       if (beepCount >= maxBeeps) {
-        buzzerActive = false;  // หยุดหลังครบ 10 ครั้ง
+        buzzerActive = false;  
         digitalWrite(BUZZER_RELAY_PIN, HIGH);
       }
     }
