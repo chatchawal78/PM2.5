@@ -3860,7 +3860,7 @@ const uint16_t epd_bitmap_DANGER [] PROGMEM = {
 #define IMG_NORMAL  1
 #define IMG_DANGER  2
 
-// ===== IMAGE ARRAY (มีแค่อันเดียว!) =====
+// ===== IMAGE ARRAY 
 const uint16_t* const epd_bitmap_allArray[] PROGMEM = {
   epd_bitmap_BOOT,
   epd_bitmap_NORMAL,
