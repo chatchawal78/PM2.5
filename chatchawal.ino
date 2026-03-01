@@ -833,7 +833,7 @@ void loop() {
         dangerMode = false;
       }
       aqi = calculateAQI(pm2_5);
-      drawBackground();  // เปลี่ยนจาก BOOT → NORMAL หรือ DANGER
+      drawBackground();  
     }
     Serial.print("🌫 PM2.5 = ");
     Serial.println(pm2_5);
@@ -866,7 +866,7 @@ void loop() {
     buzzerActive = true;
     buzzerState = false;
     lastBuzzerToggle = millis();
-    beepCount = 0;  // สำคัญมาก!
+    beepCount = 0;
     sendLineDanger();
   }
   if (!dangerMode && lastDangerMode) {
@@ -878,10 +878,10 @@ void loop() {
     dangerLineSent = false;
   }
   lastDangerMode = dangerMode;
-  // ===== หยุดบัสเซอร์ทันทีเมื่อค่าปลอดภัย =====
+
   if (!dangerMode && buzzerActive) {
     buzzerActive = false;
-    digitalWrite(BUZZER_RELAY_PIN, HIGH);  // ปิดรีเลย์ทันที
+    digitalWrite(BUZZER_RELAY_PIN, HIGH); 
     buzzerState = false;
     beepCount = 0;
     Serial.println("BUZZER STOP (safe)");
