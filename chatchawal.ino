@@ -112,7 +112,6 @@ String buildShortMessage() {
                              "---------------------------------------------------\n"
                              "ⓘ กดปุ่มที่ชิ้นงานค้าง 5-10 วินาที เพื่อดูรายละเอียดข้อมูลเพิ่มเติม";
   }
-
   else if (aqi > 100) {
     return "---------------------------------------------------\n"
            "📟 AIR QUALITY REPORT 🌸\n"
@@ -191,7 +190,7 @@ String buildProjectInfoMessage() {
          "ผ่านแอพพลิเคชั่นไลน์โลเคชั่นแบบเรียลไทม์";
 }
 // ===============================
-// 🔥 วางชุดข้อความรายงานเต็มทั้งหมดตรงนี้
+//ข้อความรายงานเต็ม
 String fullGreenReport() {
   aqi = calculateAQI(pm2_5);
   return "---------------------------------------------------\n"
@@ -377,29 +376,21 @@ String fullRedReport() {
                                                               "ⓘ ข้อมูลชุดนี้มาจากชุดโครงงานระบบวัดค่าฝุ่นละออง PM2.5 ผ่านแอพพลิเคชั่นไลน์ แบบเรียลไทม์";
 }
 #define BUTTON_PIN 27
-
 unsigned long buttonPressTime = 0;
 bool buttonHandled = false;
-
 bool requestFullReport = false;
 unsigned long lastButtonSend = 0;
 const unsigned long BUTTON_COOLDOWN = 60000;
-
 #define GPS_RX 16
 #define GPS_TX 17
 #define PM25_DANGER 50
-
 HardwareSerial gpsSerial(1);
 TinyGPSPlus gps;
-
 bool hasGPS = false;
-//===========================================
-
 // ================= สี =================
 #define COLOR_NORMAL ST77XX_BLACK
 #define COLOR_WARNING 0xFFE5
 #define COLOR_DANGER 0xF800
-
 // ================= TFT =================
 #define TFT_CS 5
 #define TFT_RST 25
@@ -408,21 +399,17 @@ bool hasGPS = false;
 #define TFT_MOSI 23
 Adafruit_ST7735 tft = Adafruit_ST7735(
   TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
-
 // ================= FIXED NUMBER =================
 void printFixedNumber(int x, int y, int v) {
   tft.setCursor(x, y);
-
   if (v < 1000) tft.print(" ");
   if (v < 100) tft.print(" ");
   if (v < 10) tft.print(" ");
-
   tft.print(v);
 }
 // ================= PMS3003 =================
 #define PMS_RX 21
 HardwareSerial pmsSerial(2);
-
 // ================= DHT22 =================
 #define DHTPIN 22
 #define DHTTYPE DHT22
@@ -450,34 +437,26 @@ bool sendLineMessage(String text) {
     return false;
   }
   if (WiFi.status() != WL_CONNECTED) return false;
-
   WiFiClientSecure client;
   client.setInsecure();
-
   HTTPClient http;
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
   http.begin(client, "https://api.line.me/v2/bot/message/push");
   http.addHeader("Content-Type", "application/json");
   http.addHeader("Authorization", "Bearer " + LINE_CHANNEL_ACCESS_TOKEN);
-
   StaticJsonDocument<1024> doc;
   doc["to"] = LINE_USER_ID;
   JsonArray msg = doc.createNestedArray("messages");
   msg.createNestedObject()["type"] = "text";
   msg[0]["text"] = text;
-
   String payload;
   serializeJson(doc, payload);
-
   int code = http.POST(payload);
   if (code == 200) {
     lastLineSend = millis();  
   }
   Serial.println("📨 LINE status = " + String(code));
-
   http.end();
-
-  // ถ้า 200 = สำเร็จ
   return (code == 200);
 }
 // ================= URL ENCODE (FIXED) =================
@@ -532,7 +511,7 @@ bool readPMSFrame(uint8_t* buffer) {
         return true;
       }
     }
-    pmsSerial.read();  // ทิ้ง byte ที่ไม่ใช่ header
+    pmsSerial.read(); 
   }
   return false;
 }
@@ -543,9 +522,7 @@ void handleButton() {
       buttonPressTime = millis();
       buttonHandled = false;
     }
-    // กดค้าง 1 วินาที
     if (!buttonHandled && millis() - buttonPressTime >= 3000) {
-      // กันสแปม
       if (millis() - lastButtonSend >= BUTTON_COOLDOWN) {
         requestFullReport = true;
         Serial.println("Full report requested");
@@ -576,42 +553,32 @@ void drawScreen() {
   tft.setTextColor(ST77XX_BLACK);
   tft.setCursor(30, 10);
   tft.print("Air Quality");
-
   tft.setTextSize(2);
   tft.setTextColor(ST77XX_BLACK);
-
   // ---------- PM1.0 ----------
   tft.setCursor(10, 40);
   tft.print("PM1.0:");
   printFixedNumber(80, 40, pm1_0);
-
   // ---------- PM2.5 ----------
   tft.setCursor(10, 65);
   tft.print("PM2.5:");
   printFixedNumber(80, 65, pm2_5);
-
   // ---------- PM10 ----------
   tft.setCursor(10, 90);
   tft.print("PM10 :");
   printFixedNumber(80, 90, pm10);
-
-
   tft.setTextSize(1);
   tft.setCursor(10, 120);
   tft.printf("Humi: %.0f%%", humidity);
-
   tft.setCursor(10, 135);
   tft.printf("Temp: %.1fC", temperature);
 }
 void drawSendingScreen() {
   tft.fillScreen(ST77XX_BLACK);
-
   tft.setTextSize(2);
   tft.setTextColor(ST77XX_WHITE);
-
   tft.setCursor(10, 50);
   tft.print("Sending...");
-
   tft.setTextSize(1);
   tft.setCursor(10, 80);
   tft.print("Please wait");
@@ -754,7 +721,7 @@ void setup() {
   }
   Serial.println(" OK");
   sendLineMessage(buildWelcomeMessage());
-  delay(65000);  // รอ 65 วินาที (กัน LINE 429)
+  delay(65000);  
   sendLineMessage(buildProjectInfoMessage());
 }
 void drawPM(float pm1, float pm25, float pm10) {
