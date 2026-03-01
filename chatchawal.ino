@@ -427,37 +427,24 @@ HardwareSerial pmsSerial(2);
 #define DHTPIN 22
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
-
-
 // ================= WiFi + LINE =================
 // ===== WIFI 1 : บ้าน =====
 const char* ssid1 = "....";
 const char* password1 = "....";
-
 // ===== WIFI 2 : Hotspot มือถือ =====
 const char* ssid2 = "...";
 const char* password2 = "....";
-
-
 String LINE_CHANNEL_ACCESS_TOKEN = ".....";
 String LINE_USER_ID = "...";
-
-
 // ================= Timer =================
 unsigned long bootTime;
 unsigned long lastLineSend = 0;
 const unsigned long MIN_LINE_INTERVAL = 60000; 
 unsigned long retryAfter429 = 0;
-
 const unsigned long BOOT_DELAY = 30000;  
-
-
 bool firstLineSent = false;
-
-
 // ================= LINE =================
 bool sendLineMessage(String text) {
-  
   if (millis() - lastLineSend < MIN_LINE_INTERVAL) {
     Serial.println("⏳ Skip LINE (too frequent)");
     return false;
